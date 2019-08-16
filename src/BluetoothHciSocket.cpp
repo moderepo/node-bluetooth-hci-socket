@@ -126,7 +126,7 @@ NAN_MODULE_INIT(BluetoothHciSocket::Init) {
   Nan::SetPrototypeMethod(tmpl, "stop", Stop);
   Nan::SetPrototypeMethod(tmpl, "write", Write);
 
-  target->Set(Nan::New("BluetoothHciSocket").ToLocalChecked(), tmpl->GetFunction());
+  target->Set(Nan::New("BluetoothHciSocket").ToLocalChecked(), tmpl->GetFunction(Nan::GetCurrentContext()).ToLocalChecked());
 }
 
 BluetoothHciSocket::BluetoothHciSocket() :
@@ -273,7 +273,7 @@ void BluetoothHciSocket::emitErrnoError() {
     Nan::New(strerror(errno)).ToLocalChecked()
   };
 
-  Local<Value> error = errorConstructor->NewInstance(1, constructorArgs);
+  Local<Value> error = Nan::NewInstance(errorConstructor, 1, constructorArgs).ToLocalChecked();
 
   Local<Value> argv[2] = {
     Nan::New("error").ToLocalChecked(),
@@ -393,7 +393,7 @@ NAN_METHOD(BluetoothHciSocket::BindRaw) {
   if (info.Length() > 0) {
     Local<Value> arg0 = info[0];
     if (arg0->IsInt32() || arg0->IsUint32()) {
-      devId = arg0->IntegerValue();
+      devId = arg0->IntegerValue(Nan::GetCurrentContext()).FromJust();
 
       pDevId = &devId;
     }
@@ -415,7 +415,7 @@ NAN_METHOD(BluetoothHciSocket::BindUser) {
   if (info.Length() > 0) {
     Local<Value> arg0 = info[0];
     if (arg0->IsInt32() || arg0->IsUint32()) {
-      devId = arg0->IntegerValue();
+      devId = arg0->IntegerValue(Nan::GetCurrentContext()).FromJust();
 
       pDevId = &devId;
     }
